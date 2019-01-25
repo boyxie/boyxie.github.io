@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>jvm on Even - A super concise theme for Hugo</title>
+    <title>Jvm on 我的学习笔记</title>
     <link>http://boyxie.github.io/tags/jvm/</link>
-    <description>Recent content in jvm on Even - A super concise theme for Hugo</description>
+    <description>Recent content in Jvm on 我的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
+    <language>zh-cn</language>
     <lastBuildDate>Tue, 22 Jan 2019 19:34:01 +0800</lastBuildDate>
     
 	<atom:link href="http://boyxie.github.io/tags/jvm/index.xml" rel="self" type="application/rss+xml" />
@@ -13,10 +13,10 @@
     
     <item>
       <title>jvm总结</title>
-      <link>http://boyxie.github.io/post/jvm/</link>
+      <link>http://boyxie.github.io/2019/01/22/jvm%E6%80%BB%E7%BB%93/</link>
       <pubDate>Tue, 22 Jan 2019 19:34:01 +0800</pubDate>
       
-      <guid>http://boyxie.github.io/post/jvm/</guid>
+      <guid>http://boyxie.github.io/2019/01/22/jvm%E6%80%BB%E7%BB%93/</guid>
       <description>深入理解java虚拟机知识点记录! java内存 1、主要分为共享内存(堆，方法区)和线程私有内存(程序计数器，虚拟机栈，本地方法栈) 1.1 - 程序计</description>
     </item>
     

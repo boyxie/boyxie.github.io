@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Dubbo官方文档总结 - 我的学习笔记</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="boyxie" />
+  <meta name="description" content="Dubbo的运行机制 Dubbo是基于java的SPI机制扩展后运行的，新增了容错、懒加载、IOC和AOP等功能，提高可扩展性。 关于java的" />
+
+  <meta name="keywords" content="Hugo, theme, even, java, 程序员, 工作, 学习, 笔记" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.53" />
+
+
+<link rel="canonical" href="http://boyxie.github.io/2019/01/18/dubbo%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%E6%80%BB%E7%BB%93/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<link href="/dist/ehlxr.min.css?v=0.0.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+
+<meta property="og:title" content="Dubbo官方文档总结" />
+<meta property="og:description" content="Dubbo的运行机制 Dubbo是基于java的SPI机制扩展后运行的，新增了容错、懒加载、IOC和AOP等功能，提高可扩展性。 关于java的" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://boyxie.github.io/2019/01/18/dubbo%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%E6%80%BB%E7%BB%93/" /><meta property="article:published_time" content="2019-01-18T19:34:10&#43;08:00"/>
+<meta property="article:modified_time" content="2019-01-18T19:34:10&#43;08:00"/>
+
+<meta itemprop="name" content="Dubbo官方文档总结">
+<meta itemprop="description" content="Dubbo的运行机制 Dubbo是基于java的SPI机制扩展后运行的，新增了容错、懒加载、IOC和AOP等功能，提高可扩展性。 关于java的">
+
+
+<meta itemprop="datePublished" content="2019-01-18T19:34:10&#43;08:00" />
+<meta itemprop="dateModified" content="2019-01-18T19:34:10&#43;08:00" />
+<meta itemprop="wordCount" content="1020">
+
+
+
+<meta itemprop="keywords" content="Dubbo,源码," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Dubbo官方文档总结"/>
+<meta name="twitter:description" content="Dubbo的运行机制 Dubbo是基于java的SPI机制扩展后运行的，新增了容错、懒加载、IOC和AOP等功能，提高可扩展性。 关于java的"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div class="container" >
+    
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">我的学习笔记</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">目录</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a><a href="/link/">
+        <li class="mobile-menu-item">友链</li>
+      </a>
+  </ul>
+</nav>
+
+    <header id="header" class="header">
+      <div class="header-div">
+        
+<div class="logo-wrapper">
+  <a href="/" class="logo">我的学习笔记</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+    <li class="menu-item ">
+        <a class="menu-item-link" href="/">
+          <i class="fa fa-fw fa-home"></i>
+          首页
+        </a>
+      </li><li class="menu-item ">
+        <a class="menu-item-link" href="/post/">
+          <i class="fa fa-fw fa-archive"></i>
+          目录
+        </a>
+      </li><li class="menu-item ">
+        <a class="menu-item-link" href="/tags/">
+          <i class="fa fa-fw fa-tag"></i>
+          标签
+        </a>
+      </li><li class="menu-item ">
+        <a class="menu-item-link" href="/categories/">
+          <i class="fa fa-fw fa-th"></i>
+          分类
+        </a>
+      </li><li class="menu-item ">
+        <a class="menu-item-link" href="/about/">
+          <i class="fa fa-fw fa-user"></i>
+          关于
+        </a>
+      </li><li class="menu-item ">
+        <a class="menu-item-link" href="/link/">
+          <i class="fa fa-fw fa-link"></i>
+          友链
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+      </div>
+    </header>
+    
+
+    <main id="main" class="main">
+      <div class="content-wrapper" id="mobile-panel">
+        <div id="content" class="content">
+          
+          
+
+          <article class="post">
+    
+    <header class="post-header single-post-header">
+      <h1 class="post-title">Dubbo官方文档总结</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> <i class="fa fa-calendar" aria-hidden="true"></i> 2019-01-18 </span>
+        <div class="post-category">
+            | <i class="fa fa-folder" aria-hidden="true"></i>
+            
+              <a href="/categories/java/"> java </a>
+            
+          </div>
+        <span class="more-meta"> | <i class="fa fa-book" aria-hidden="true"></i> 约 1020 字 </span>
+        <span class="more-meta"> | <i class="fa fa-clock-o" aria-hidden="true"></i> 预计阅读 3 分钟 </span>
+        <span class="more-meta">
+          | <i class="fa fa-comment-o" aria-hidden="true"></i>
+          <a href="#gitalk-container" itemprop="discussionUrl">
+            <span class="post-comments-count gitalk-comment-count" itemprop="commentCount"></span>
+          </a>
+           条评论
+        </span>
+        | <i class="fa fa-eye"></i>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#dubbo的运行机制">Dubbo的运行机制</a>
+<ul>
+<li><a href="#初始化">初始化</a></li>
+<li><a href="#框架设计">框架设计</a></li>
+<li><a href="#调用链">调用链</a></li>
+<li><a href="#rpc调用过程分析-未完成">RPC调用过程分析（未完成）</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+  <div class="toc-taxonomy">
+    
+<div class="sidebar-category">
+    <hr>
+    <h5>
+        <a href="/categories/">分类排行</a>
+    </h5>
+
+    
+        <a href="http://boyxie.github.io//categories/java" class="taxonomy-name">
+            java
+            <span class="taxonomy-counts">4</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//categories/%E7%BD%91%E7%AB%99" class="taxonomy-name">
+            网站
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+</div>
+
+<div class="sidebar-tag">
+    <hr>
+    <h5>
+        <a href="/tags/">标签排行</a>
+    </h5>
+
+    
+        <a href="http://boyxie.github.io//tags/java" class="taxonomy-name">
+            java
+            <span class="taxonomy-counts">3</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/dubbo" class="taxonomy-name">
+            dubbo
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/jvm" class="taxonomy-name">
+            jvm
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/leetcode" class="taxonomy-name">
+            leetcode
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/linux" class="taxonomy-name">
+            linux
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/memcached" class="taxonomy-name">
+            memcached
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/nio" class="taxonomy-name">
+            nio
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/redis" class="taxonomy-name">
+            redis
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/%E5%AD%A6%E4%B9%A0" class="taxonomy-name">
+            学习
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/%E6%BA%90%E7%A0%81" class="taxonomy-name">
+            源码
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+</div>
+
+  </div>
+</div>
+
+
+    
+    <div class="post-content">
+      
+
+<h2 id="dubbo的运行机制">Dubbo的运行机制</h2>
+
+<p>Dubbo是基于java的SPI机制扩展后运行的，新增了容错、懒加载、IOC和AOP等功能，提高可扩展性。<br />
+关于java的SPI机制：是将指定接口，通过java的类加载机制去加载指定文件中的实现类，来实现第三方的扩展（比如jdbc）。
+对于类加载机制，可以参考这篇文章<a href="https://blog.csdn.net/yangcheng33/article/details/52631940">真正理解线程上下文类加载器</a></p>
+
+<h3 id="初始化">初始化</h3>
+
+<p>如果使用spring的话，服务提供端通过注册spring的上下文刷新事件启动ServiceBean的export方法，进行的配置的初始化，服务接口代理类的生成。
+初始化主要是:检查配置是否正确&ndash;&gt;添加默认配置&ndash;&gt;解析完配置生成URL对象&ndash;&gt;初始化Invoker(创建Wrapper包装类并实例化返回)&ndash;&gt;根据协议类型生成Exporter导出对象&ndash;&gt;启动RPC通信框架(默认netty)&ndash;&gt;
+如果导出远程服务(如zookeeper)初始化注册中心&ndash;&gt;根据注册信息注册服务者信息并监听&ndash;&gt;等待消费者调用代理类的方法</p>
+
+<p>如果是消费者端的话，通过ReferenceBean重写了FactoryBean的getObject方法，进行的配置的初始化，引用接口代理类的生成。<br />
+初始化主要是:检查配置是否正确&ndash;&gt;添加默认配置&ndash;&gt;获取注册Registry服务类型(如zookeeper)&ndash;&gt;构建URL&ndash;&gt;根据协议类型(默认dubbo)初始化Invoker&ndash;&gt;
+如果是远程服务需要启动RPC通信框架(默认netty)&ndash;&gt;根据注册信息注册消费者信息并监听&ndash;&gt;根据Invoker生成服务接口的代理类&ndash;&gt;消费者调用代理类的方法</p>
+
+<p>以上是主链，还有监控、其他过滤器上授权等附件功能都是通过Wrapper（基于 ProtocolFilterWrapper、ProtocolListenerWrapper）类封装后 Filter 拦截实现
+备注：Invoker与Exporter底层通过RPC相互通信
+<img src="http://dubbo.apache.org/docs/zh-cn/dev/sources/images/dubbo_rpc_invoke.jpg" alt="Dubbo"/></p>
+
+<h3 id="框架设计">框架设计</h3>
+
+<p><img src="http://dubbo.apache.org/docs/zh-cn/dev/sources/images/dubbo-framework.jpg" alt="Dubbo"/><br />
+在 RPC 中，Protocol 是核心层，也就是只要有 Protocol + Invoker + Exporter 就可以完成非透明的 RPC 调用，然后在 Invoker 的主过程上 Filter 拦截点。</p>
+
+<h3 id="调用链">调用链</h3>
+
+<p><img src="http://dubbo.apache.org/docs/zh-cn/dev/sources/images/dubbo-extension.jpg" alt="Dubbo"/></p>
+
+<h3 id="rpc调用过程分析-未完成">RPC调用过程分析（未完成）</h3>
+
+<p>参考文章：<br />
+<a href="http://dubbo.apache.org/zh-cn/docs/user/quick-start.html">Dubbo官方文档</a><br />
+<a href="https://javadoop.com/">很详细的JUC源码解析</a></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">boyxie</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">本文链接</span>
+    <span class="item-content"><a href="http://boyxie.github.io//2019/01/18/dubbo%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%E6%80%BB%E7%BB%93/" target="_blank">
+      <script>
+        document.write(decodeURI(location.origin + location.pathname))
+      </script>
+    </a></span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">版权声明</span>
+    <span class="item-content">
+        本博客所有文章除特别声明外，均采用 <a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a> 许可协议。转载请注明出处！</span>
+  </p>
+</div>
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/dubbo/">Dubbo</a>
+          
+          <a href="/tags/%E6%BA%90%E7%A0%81/">源码</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/01/22/jvm%E6%80%BB%E7%BB%93/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">jvm总结</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/01/11/%E5%B9%B3%E6%97%B6%E5%AE%B9%E6%98%93%E5%BF%98%E8%AE%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E7%9F%A5%E8%AF%86%E7%82%B9/">
+            <span class="next-text nav-default">平时容易忘记的一些知识点</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="gitalk-container" class="gitalk-container"></div>
+    <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+    <script src="/lib/gitalk/gitalk.min.js"></script>
+    <script type="text/javascript">
+      var gitalk = new Gitalk({
+        id: '0139868371cc7faad89130bffd89d313',
+        title: 'Dubbo官方文档总结',
+        clientID: 'a2830ce46b7aedeeddef',
+        clientSecret: 'cad386164d1f0727fdb9054f1367918f8023f89e',
+        repo: 'boyxie.github.io',
+        owner: 'boyxie',
+        admin: ['boyxie'],
+        body: decodeURI(location.href)
+      });
+      gitalk.render('gitalk-container');
+    </script>
+    <noscript>Please enable JavaScript to view the
+      <a href="https://github.com/gitalk/gitalk">comments powered by gitalk.</a>
+    </noscript>
+
+      </div>
+
+    </main>
+    <footer id="footer" class="footer">
+      <div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 -
+    <a class="theme-link" href="https://github.com/ehlxr/hugo-theme-ehlxr">ehlxr</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">boyxie</span>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv">
+      
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span>
+    </span>
+    <span class="division">|</span>
+    <span id="busuanzi_container_site_uv">
+      
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span>
+    </span>
+  </div>
+
+
+</div>
+    </footer>
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  
+  
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/ehlxr.min.js?v=0.0.1"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+
+<script id="baidu_push">
+  (function(){
+    if (window.location.hostname === 'localhost') return;
+    var bp = document.createElement('script'); bp.async = true;
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+  })();
+</script>
+
+
+
+</body>
+</html>

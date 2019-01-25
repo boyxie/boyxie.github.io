@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>jvm总结 - 我的学习笔记</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="boyxie" />
+  <meta name="description" content="深入理解java虚拟机知识点记录! java内存 1、主要分为共享内存(堆，方法区)和线程私有内存(程序计数器，虚拟机栈，本地方法栈) 1.1 - 程序计" />
+
+  <meta name="keywords" content="Hugo, theme, even, java, 程序员, 工作, 学习, 笔记" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.53" />
+
+
+<link rel="canonical" href="http://boyxie.github.io/2019/01/22/jvm%E6%80%BB%E7%BB%93/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<link href="/dist/ehlxr.min.css?v=0.0.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+
+<meta property="og:title" content="jvm总结" />
+<meta property="og:description" content="深入理解java虚拟机知识点记录! java内存 1、主要分为共享内存(堆，方法区)和线程私有内存(程序计数器，虚拟机栈，本地方法栈) 1.1 - 程序计" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://boyxie.github.io/2019/01/22/jvm%E6%80%BB%E7%BB%93/" /><meta property="article:published_time" content="2019-01-22T19:34:01&#43;08:00"/>
+<meta property="article:modified_time" content="2019-01-24T19:34:01&#43;08:00"/>
+
+<meta itemprop="name" content="jvm总结">
+<meta itemprop="description" content="深入理解java虚拟机知识点记录! java内存 1、主要分为共享内存(堆，方法区)和线程私有内存(程序计数器，虚拟机栈，本地方法栈) 1.1 - 程序计">
+
+
+<meta itemprop="datePublished" content="2019-01-22T19:34:01&#43;08:00" />
+<meta itemprop="dateModified" content="2019-01-24T19:34:01&#43;08:00" />
+<meta itemprop="wordCount" content="4528">
+
+
+
+<meta itemprop="keywords" content="jvm,java," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="jvm总结"/>
+<meta name="twitter:description" content="深入理解java虚拟机知识点记录! java内存 1、主要分为共享内存(堆，方法区)和线程私有内存(程序计数器，虚拟机栈，本地方法栈) 1.1 - 程序计"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div class="container" >
+    
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">我的学习笔记</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">目录</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a><a href="/link/">
+        <li class="mobile-menu-item">友链</li>
+      </a>
+  </ul>
+</nav>
+
+    <header id="header" class="header">
+      <div class="header-div">
+        
+<div class="logo-wrapper">
+  <a href="/" class="logo">我的学习笔记</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+    <li class="menu-item ">
+        <a class="menu-item-link" href="/">
+          <i class="fa fa-fw fa-home"></i>
+          首页
+        </a>
+      </li><li class="menu-item ">
+        <a class="menu-item-link" href="/post/">
+          <i class="fa fa-fw fa-archive"></i>
+          目录
+        </a>
+      </li><li class="menu-item ">
+        <a class="menu-item-link" href="/tags/">
+          <i class="fa fa-fw fa-tag"></i>
+          标签
+        </a>
+      </li><li class="menu-item ">
+        <a class="menu-item-link" href="/categories/">
+          <i class="fa fa-fw fa-th"></i>
+          分类
+        </a>
+      </li><li class="menu-item ">
+        <a class="menu-item-link" href="/about/">
+          <i class="fa fa-fw fa-user"></i>
+          关于
+        </a>
+      </li><li class="menu-item ">
+        <a class="menu-item-link" href="/link/">
+          <i class="fa fa-fw fa-link"></i>
+          友链
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+      </div>
+    </header>
+    
+
+    <main id="main" class="main">
+      <div class="content-wrapper" id="mobile-panel">
+        <div id="content" class="content">
+          
+          
+
+          <article class="post">
+    
+    <header class="post-header single-post-header">
+      <h1 class="post-title">jvm总结</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> <i class="fa fa-calendar" aria-hidden="true"></i> 2019-01-22 </span>
+        <div class="post-category">
+            | <i class="fa fa-folder" aria-hidden="true"></i>
+            
+              <a href="/categories/java/"> java </a>
+            
+          </div>
+        <span class="more-meta"> | <i class="fa fa-book" aria-hidden="true"></i> 约 4528 字 </span>
+        <span class="more-meta"> | <i class="fa fa-clock-o" aria-hidden="true"></i> 预计阅读 10 分钟 </span>
+        <span class="more-meta">
+          | <i class="fa fa-comment-o" aria-hidden="true"></i>
+          <a href="#gitalk-container" itemprop="discussionUrl">
+            <span class="post-comments-count gitalk-comment-count" itemprop="commentCount"></span>
+          </a>
+           条评论
+        </span>
+        | <i class="fa fa-eye"></i>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#深入理解java虚拟机知识点记录">深入理解java虚拟机知识点记录!</a></li>
+<li><a href="#java内存">java内存</a></li>
+<li><a href="#对象实例化">对象实例化</a></li>
+<li><a href="#内存溢出">内存溢出</a></li>
+<li><a href="#垃圾收集器和内存回收">垃圾收集器和内存回收</a></li>
+<li><a href="#字节码">字节码</a></li>
+<li><a href="#类加载">类加载</a></li>
+<li><a href="#方法执行">方法执行</a></li>
+<li><a href="#编译">编译</a></li>
+<li><a href="#内存模型">内存模型</a></li>
+<li><a href="#线程">线程</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+  <div class="toc-taxonomy">
+    
+<div class="sidebar-category">
+    <hr>
+    <h5>
+        <a href="/categories/">分类排行</a>
+    </h5>
+
+    
+        <a href="http://boyxie.github.io//categories/java" class="taxonomy-name">
+            java
+            <span class="taxonomy-counts">4</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//categories/%E7%BD%91%E7%AB%99" class="taxonomy-name">
+            网站
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+</div>
+
+<div class="sidebar-tag">
+    <hr>
+    <h5>
+        <a href="/tags/">标签排行</a>
+    </h5>
+
+    
+        <a href="http://boyxie.github.io//tags/java" class="taxonomy-name">
+            java
+            <span class="taxonomy-counts">3</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/dubbo" class="taxonomy-name">
+            dubbo
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/jvm" class="taxonomy-name">
+            jvm
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/leetcode" class="taxonomy-name">
+            leetcode
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/linux" class="taxonomy-name">
+            linux
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/memcached" class="taxonomy-name">
+            memcached
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/nio" class="taxonomy-name">
+            nio
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/redis" class="taxonomy-name">
+            redis
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/%E5%AD%A6%E4%B9%A0" class="taxonomy-name">
+            学习
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+        <a href="http://boyxie.github.io//tags/%E6%BA%90%E7%A0%81" class="taxonomy-name">
+            源码
+            <span class="taxonomy-counts">1</span>
+        </a>
+    
+</div>
+
+  </div>
+</div>
+
+
+    
+    <div class="post-content">
+      
+
+<h2 id="深入理解java虚拟机知识点记录">深入理解java虚拟机知识点记录!</h2>
+
+<h2 id="java内存">java内存</h2>
+
+<p>1、主要分为共享内存(堆，方法区)和线程私有内存(程序计数器，虚拟机栈，本地方法栈)<br />
+  1.1  - 程序计数器：记录字节码执行地址，本地方法除外<br />
+       - 虚拟机栈：局部变量，操作数栈，动态链接，方法出口等，如果逃逸分析成功，也可存放对象<br />
+       - 本地方法栈： 与虚拟机栈类似，执行native方法，Hotspot将其与虚拟机栈合并实现<br />
+  1.2  - 堆：存放对象实例，包括分代，线程私有TLAB等划分<br />
+       -方法区：类(class)信息，常量，静态变量，即时编译后的代码（俗称永久代），1.7以后字符串常量池已单独存在在Metaspace<br />
+       - 运行时常量池是方法区的一部分<br />
+  1.3  - 直接内存，不属于java虚拟机管理，主要用于NIO中</p>
+
+<h2 id="对象实例化">对象实例化</h2>
+
+<p>查询class信息是否已经初始化&ndash;&gt;获取对象长度&ndash;&gt;是否字段初始化&ndash;&gt;是否在TLAB中分配&ndash;&gt;如果在堆分配需要CAS保证原子性
+&ndash;&gt;需要则对象初始化零值&ndash;&gt;设置对象头信息(锁、哈希、分代、线程、时间等)&ndash;&gt;对象入栈执行下一步</p>
+
+<p>对象内存包括：对象头、实例数据（相同长度一起，可整合优化空间利用率）、对齐填充</p>
+
+<h2 id="内存溢出">内存溢出</h2>
+
+<p>线程内存可能有：xss分配栈空间，多线程数量超出或者栈调用深度超出都可以溢出<br />
+堆内存：主要是对象分配过多，大对象或者循环产生对象<br />
+方法区：字符串常量分配过多，或者动态字节码的生成class信息，包括动态代理、cglib、jsp、osgi等<br />
+直接内存：XX：MaxDirectMemorySize指定，unsafe可以进行分配，nio里面的DirectByteBuffer也可以，只能FULLGC时顺带回收</p>
+
+<h2 id="垃圾收集器和内存回收">垃圾收集器和内存回收</h2>
+
+<p>1、对象判断：引用计数器（相互引用bug，已弃用）、可达性分析<br />
+2、GCRoots的对象包括下面˚几种：虚拟机栈（栈帧中的本地变量表）中引用的对象。方法区中类静态属性引用的对象。方法区中常量引用的对象。本地方法栈中JNI（即一般说的Native方法）引用的对象。<br />
+3、jdk1.2以后引用分为：强引用（不可回收），弱引用（内存溢出时回收），软引用（下一次GC时回收），虚引用（不可访问）<br />
+4、回收算法：标记-清除（内存碎片,CMS），标记复制（空间利用率低，适合新生代按8:1:1分配），标记-整理（效率低，适合老年代）
+5、GC的收集主要靠设置安全点和安全域，进行安全的stw<br />
+CMS是基于标记-清除算法，除了并发功能，缺点包括抢占系统资源，并发新产生的垃圾，内存碎片，可设置其他整理回收算法补充<br />
+G1是基于标记-整理和复制算法，不会产生内存碎片，分成多个小堆，需要额外保存各个堆之间的垃圾收集信息（选取最优回收价值），对象引用信息<br />
+* 大对象如果新生代内存不足，会直接进入老年代；MaxTenuringThreshold=15（默认15次YGC进入老年代）；survivor同一年代的超过它的一半空间会进入老年代
+如果年轻代回收后的内存大于survivor空间，将尝试进入老年代</p>
+
+<p>jps 查询java线程；jstat监控统计信息；jinfo配置信息；jmap常用来内存dump下载；jhat简版dump分析工具，不常用；jstack线程堆栈查看</p>
+
+<h2 id="字节码">字节码</h2>
+
+<p>主要是由规范属性表映射成的指令值，解析的时候再去常量池查询解析，对于自定义的方法内容保存在关联的code属性值中
+Code属性是Class文件中最重要的一个属性，如果把一个Java程序中的信息分为代码（Code，方法体里面的Java代码）和元数据（Metadata，包括类、字段、方法定义及其他信息）两部分，
+那么在整个Class文件中，Code属性用于描述代码，所有的其他数据项目都用于描述元数据。</p>
+
+<p>java虚拟机面向操作数栈的架构对于面向寄存器的架构会因为操作码超过1字节而带来损失，不过由于不要内存对齐可以节省内存
+do{
+    自动计算PC寄存器的值加1；
+    根据PC寄存器的指示位置，从字节码流中取出操作码；
+    if（字节码存在操作数）从字节码流中取出操作数；
+    执行操作码所定义的操作；
+}while（字节码流长度＞0）；</p>
+
+<p>字节码也是支持其他语言可以使用java虚拟机的必要文件</p>
+
+<h2 id="类加载">类加载</h2>
+
+<p>加载（Loading）、验证（Verification，字节码的正确和安全）、准备（Preparation，初始化零值）、解析（Resolution，对符号引用赋值）、初始化（Initialization，根据代码真正赋值）、使用（Using）和卸载（Unloading）7个阶段。其中验证、准备、解析3个部分统称为连接（Linking）</p>
+
+<p>对于这5种会触发类进行初始化的场景，虚拟机规范中使用了一个很强烈的限定语：“有且只有”，这5种场景中的行为称为对一个类进行主动引用。除此之外，所有引用类的方式都不会触发初始化，称为被动引用。
+1）遇到new、getstatic、putstatic或invokestatic这4条字节码指令时，如果类没有进行过初始化，则需要先触发其初始化。生成这4条指令的最常见的Java代码场景是：使用new关键字实例化对象的时候、读取或设置一个类的静态字段（被final修饰、已在编译期把结果放入常量池的静态字段除外）的时候，以及调用一个类的静态方法的时候。
+2）使用java.lang.reflect包的方法对类进行反射调用的时候，如果类没有进行过初始化，则需要先触发其初始化。
+3）当初始化一个类的时候，如果发现其父类还没有进行过初始化，则需要先触发其父类的初始化。
+4）当虚拟机启动时，用户需要指定一个要执行的主类（包含main（）方法的那个类），虚拟机会先初始化这个主类。
+5）当使用JDK1.7的动态语言支持时，如果一个java.lang.invoke.MethodHandle实例最后的解析结果REF_getStatic、REF_putStatic、REF_invokeStatic的方法句柄，并且这个方法句柄所对应的类没有进行过初始化，则需要先触发其初始化。</p>
+
+<p>“加载”是“类加载”（ClassLoading）过程的一个阶段。在加载阶段，虚拟机需要完成以下3件事情：
+1）通过一个类的全限定名来获取定义此类的二进制字节流。
+2）将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构。
+3）在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入口。
+加载完成后字节码会变成方法区的class对象</p>
+
+<h2 id="方法执行">方法执行</h2>
+
+<p>虚拟机栈里面存放的是栈帧，栈帧里面存放着方法的局部变量、操作数栈（LIFO）、动态连接、返回地址等
+局部变量如果遇到大对象时，由于内存复用可能不会释放对应内存，可以手动设为null释放，适用于后续方法执行时间长并用不到该变量或者无法JIT
+动态方法指令是实现动态语言的基础，比如Lambda表达式</p>
+
+<p>基于栈的指令多出了操作入栈和出栈，还有需要访问内存，无论是调用次数和效率比起寄存器的指令都要差一些，虽然可以优化但是也是治标不治本，优点是可移植</p>
+
+<h2 id="编译">编译</h2>
+
+<p>语法糖、可以基于编译接口开发语法格式校验的IDEA插件
+JIT编译，Hotspot是通过基于计数器（client:1500,server:10000）编译本地代码，还有采样热点探测(基于栈顶方法出现次数)统计。编译有分层编译，对应的不同的速度和质量
+由于即时编译影响正常的代码执行，需要考虑效率问题</p>
+
+<h2 id="内存模型">内存模型</h2>
+
+<p>工作内存（线程私有）和主内存（全局共享），线程可以直接修改和访问自己的工作内存，线程间共享数据或者修改和访问主内存需要通过主内存的接口
+由于没有规定读取和修改操作必须原子（由于不确定线程何时归还变量，也不可能是原子操作），所以线程间相互修改数据是不安全的，除非加锁
+happen before 原则
+- 线程内保证有序
+- 加锁先于解锁
+- volatile保证写操作先于读操作
+- Thread.start先于该线程的任何动作
+- Thread.join结束线程必须在任何动作之后，还有中断先于检测中断，对象初始化先于finalize
+- 传递性，A先B，B先C，则A先于C</p>
+
+<p>volatile只保证可见性，可防止指令重排，对自身修改访问保证原子性（修改后必须同步到主内存，使用前必须从主内存刷新），不保证其他操作（如自加++）的原子性
+对于long和double类型运算不安全是基于虚拟机未实现原子操作，当前虚拟机对于64位的这两个类型都是原子的，无需使用volatile声明，虽然虚拟机只规定32位操作必须原子
+- 原子性：基本类型操作保证安全，或者使用锁
+- 可见性：volatile、synchronize、final
+- 有序性：volatile、synchronize</p>
+
+<h2 id="线程">线程</h2>
+
+<p>内核线程是CPU的调度器调度的最小单位，内核线程会对应一个轻量级进程（我们常说的进程），这个有系统内核支持实现<br />
+java线程在Windows和Linux都是一对一的轻量级进程，而其他平台可能使用轻量级进程M：N的用户线程<br />
+java线程的调度由系统执行，虽然可以设置优先级，但是效果不明显，yied可以让出CPU时间<br />
+状态：新建、运行（准备）、等待（无限和有限）、阻塞、结束
+安全：当多个线程的访问对象时，不需要任何的同步和协调，调用该对象的行为都能获得正确的结果，那这个对象就是安全的<br />
+不可变对象（immutable），线程安全不一定绝对安全（比如vector虽然都加了同步，但是如果在循环中被别的线程删除元素，程序会错误）
+措施：<br />
+悲观锁<br />
+- synchronize，
+- reentrantLock可以实现非公平锁，可以中断，可以增加condition条件
+乐观锁<br />
+- CAS指令需要参数（内存地址，新址，旧址），ABA问题出现在来回修改值的情况，具体应用场景不清楚，可以使用带版本号的CAS或者synchronize
+- ThreadLocal 线程本地变量，key为当前线程的hash值，value为存储变量的map
+由于线程的阻塞和唤醒需要由内核执行，所以会存在用户态到内核态的切换，这个需要保存状态数据影响执行效率，虚拟机通过锁升级优化</p>
+
+<p>锁优化：
+- 自旋锁 可以避免状态的相互状态提高执行效率，但要设定自旋次数或者超时时间，jvm用了自适应自旋锁来动态调整
+- 锁消除 主要来自于逃逸分析
+- 锁粗化 减少太频繁的加锁和解锁
+- 轻量级锁 通过在对象头里添加标记表示，适合锁竞争不频繁的应用，不然还增加了CAS的过程
+加锁过程：进入synchronize方法&ndash;&gt;如果对象未锁定&ndash;&gt;当前栈帧新建一条锁记录&ndash;&gt;通过CAS将对象的MarkWord指向锁记录&ndash;&gt;
+如果成功将MW设为轻量级锁&ndash;&gt;如果失败并且不是指向当前线程将锁升级为重量级锁&ndash;&gt;当前线程和后续线程直接阻塞
+解锁过程：通过CAS将对象头替换为当前线程的记录，如果失败说明有锁升级，需要在释放锁的时候唤醒其他等待线程
+- 偏向锁 对象头设置偏向锁标识并写入当前线程ID，下次进入同步方法的时候检查是否是当前线程，如果是则直接执行，如果有其他线程竞争，则取消标志或升级为轻量级锁</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">boyxie</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">本文链接</span>
+    <span class="item-content"><a href="http://boyxie.github.io//2019/01/22/jvm%E6%80%BB%E7%BB%93/" target="_blank">
+      <script>
+        document.write(decodeURI(location.origin + location.pathname))
+      </script>
+    </a></span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">版权声明</span>
+    <span class="item-content">
+        本博客所有文章除特别声明外，均采用 <a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a> 许可协议。转载请注明出处！</span>
+  </p>
+</div>
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/jvm/">jvm</a>
+          
+          <a href="/tags/java/">java</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/2019/01/18/dubbo%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%E6%80%BB%E7%BB%93/">
+            <span class="next-text nav-default">Dubbo官方文档总结</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="gitalk-container" class="gitalk-container"></div>
+    <link rel="stylesheet" href="/lib/gitalk/gitalk.css">
+    <script src="/lib/gitalk/gitalk.min.js"></script>
+    <script type="text/javascript">
+      var gitalk = new Gitalk({
+        id: '2c33cde06720b3d3f20ba82b86556106',
+        title: 'jvm总结',
+        clientID: 'a2830ce46b7aedeeddef',
+        clientSecret: 'cad386164d1f0727fdb9054f1367918f8023f89e',
+        repo: 'boyxie.github.io',
+        owner: 'boyxie',
+        admin: ['boyxie'],
+        body: decodeURI(location.href)
+      });
+      gitalk.render('gitalk-container');
+    </script>
+    <noscript>Please enable JavaScript to view the
+      <a href="https://github.com/gitalk/gitalk">comments powered by gitalk.</a>
+    </noscript>
+
+      </div>
+
+    </main>
+    <footer id="footer" class="footer">
+      <div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 -
+    <a class="theme-link" href="https://github.com/ehlxr/hugo-theme-ehlxr">ehlxr</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">boyxie</span>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv">
+      
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span>
+    </span>
+    <span class="division">|</span>
+    <span id="busuanzi_container_site_uv">
+      
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span>
+    </span>
+  </div>
+
+
+</div>
+    </footer>
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  
+  
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/ehlxr.min.js?v=0.0.1"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+
+<script id="baidu_push">
+  (function(){
+    if (window.location.hostname === 'localhost') return;
+    var bp = document.createElement('script'); bp.async = true;
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+  })();
+</script>
+
+
+
+</body>
+</html>
