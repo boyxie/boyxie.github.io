@@ -6,10 +6,28 @@
     <description>Recent content on 我的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 22 Jan 2019 19:34:01 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 25 Jan 2019 14:56:11 +0800</lastBuildDate>
     
 	<atom:link href="http://boyxie.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Search</title>
+      <link>http://boyxie.github.io/search/</link>
+      <pubDate>Fri, 25 Jan 2019 14:56:11 +0800</pubDate>
+      
+      <guid>http://boyxie.github.io/search/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Link</title>
+      <link>http://boyxie.github.io/link/</link>
+      <pubDate>Fri, 25 Jan 2019 11:39:41 +0800</pubDate>
+      
+      <guid>http://boyxie.github.io/link/</guid>
+      <description>友情链接 我的个人网站 Lan&amp;rsquo;s Blog 多看几眼这个图，会涨工资</description>
+    </item>
     
     <item>
       <title>jvm总结</title>
@@ -53,7 +71,7 @@
       <pubDate>Tue, 18 Dec 2018 19:07:40 +0800</pubDate>
       
       <guid>http://boyxie.github.io/about/</guid>
-      <description>一个不知名公司的不知名程序员 java生态、前端、服务器 业务应该没问题 框架还不会 源码也能看 现在还会写博客了哈</description>
+      <description>一个不知名公司的不知名程序员 java生态、前端、服务器 业务应该没问题 框架还不会 源码也能看 现在还会写博客了哈 多看几眼这个图，会涨工资</description>
     </item>
     
     <item>
@@ -62,7 +80,7 @@
       <pubDate>Wed, 12 Dec 2018 19:33:44 +0800</pubDate>
       
       <guid>http://boyxie.github.io/2018/12/12/%E5%BC%80%E7%AF%87%E8%AF%8D/</guid>
-      <description>记录一下关于这个网站的事情! 最近公司都在用vue，对于小型网站，快速开发确实很方便，于是搜了一下基于vue的blog信息， 发现一个基于vue</description>
+      <description>记录一下关于这个网站的事情! 当前网站 用了一段时间vuepress，审美疲劳，又找不到心仪的主题，遂重新一波百度、Google，发现hugo比</description>
     </item>
     
   </channel>

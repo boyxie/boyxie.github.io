@@ -65,7 +65,7 @@
 
 <meta itemprop="datePublished" content="2018-12-28T19:34:38&#43;08:00" />
 <meta itemprop="dateModified" content="2018-12-28T19:34:38&#43;08:00" />
-<meta itemprop="wordCount" content="1471">
+<meta itemprop="wordCount" content="1468">
 
 
 
@@ -184,7 +184,7 @@
               <a href="/categories/java/"> java </a>
             
           </div>
-        <span class="more-meta"> | <i class="fa fa-book" aria-hidden="true"></i> 约 1471 字 </span>
+        <span class="more-meta"> | <i class="fa fa-book" aria-hidden="true"></i> 约 1468 字 </span>
         <span class="more-meta"> | <i class="fa fa-clock-o" aria-hidden="true"></i> 预计阅读 3 分钟 </span>
         <span class="more-meta">
           | <i class="fa fa-comment-o" aria-hidden="true"></i>
@@ -235,7 +235,7 @@ channel.configureBlocking(false)；将channel设置为非阻塞模式，因为se
 SelectionKey key = channel.register(selector,SelectionKey.OP_READ)；将channel注册到selector上，key包含了channel和selector信息
 selector.select():将上一次select之后准备好的channel对应的SelectionKey复制到set中，如果没有就阻塞</p>
 
-<p>###阻塞和非阻塞</p>
+<h3 id="阻塞和非阻塞">阻塞和非阻塞</h3>
 
 <pre><code class="language-java">//服务端
     public static void main(String[] args) throws IOException {

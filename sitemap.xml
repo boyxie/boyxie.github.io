@@ -3,6 +3,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://boyxie.github.io/search/</loc>
+    <lastmod>2019-01-25T14:56:11+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://boyxie.github.io/link/</loc>
+    <lastmod>2019-01-25T11:39:41+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>http://boyxie.github.io/2019/01/22/jvm%E6%80%BB%E7%BB%93/</loc>
     <lastmod>2019-01-24T19:34:01+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -136,7 +150,7 @@
   
   <url>
     <loc>http://boyxie.github.io/</loc>
-    <lastmod>2019-01-24T19:34:01+08:00</lastmod>
+    <lastmod>2019-01-25T14:56:11+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0</priority>
   </url>
